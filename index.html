@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Sorteio Aleatório</title>
+
+		<style type="text/css">
+
+			body {
+			    font-family: fantasy;
+			}
+			.corpo-sorteado {
+			    width: 50%;
+			    margin: 0 auto;
+			}
+			.sorteado {
+			    width: 80%;
+			    margin: 0 auto;
+			    text-align: center;
+			}
+			.pai {
+			 	display: flex;
+			    background: #032113;
+			    color: aliceblue;
+			}
+			.filho {
+			    display: table-cell;
+			    vertical-align: middle;
+			    height: 500px;
+			    width: 1%;
+			    text-align: center;
+			    font-size: 400px;
+			}
+			.input {
+			    text-align: center;
+			}
+			.input input {
+			    width: 233px;
+			    height: 48px;
+			    text-align: center;
+			    font-size: 40px;
+			    margin-top: 22px;
+			    border: 5px solid #055008;
+			}
+			.input button {
+			    width: 487px;
+			    height: 45px;
+			    margin-top: 5px;
+			    background-color: #030e03;
+			    color: white;
+			    font-size: 23px;
+			}
+			.logo1 {
+			    position: absolute;
+			    margin: 50px 4px -57px -320px;
+			    float: right;
+			    display: grid;
+			    text-align: center;
+			}
+	        .logo2 {
+			    position: absolute;
+			    margin: 50px 4px -57px 700px;
+			    float: right;
+			    display: grid;
+			    text-align: center;
+			}
+			#sorteados li {
+			    border: 3px solid #032113;
+			    padding: 7px 18px 6px 16px;
+			    background-color: aliceblue;
+			    color: #032113;
+			    font-size: 33px;
+			}
+			span.esgotado {
+			    font-size: 35px;
+			    color: chartreuse;
+			}
+		</style>
+
+	    <script>
+
+	    	// Adiciona a funçao ao documento após o carregamento da HTML
+	    	document.addEventListener("DOMContentLoaded", function(event) {
+
+	    		// Intervalo de repetição da fnção hold
+		   		var intervalId = 0;
+		   		// Array onde serão armazenados os numeros sortados
+		   		var sorteados = [];
+		   		// Armazena o numero sorteado
+		   		var num_sorteado;
+		   		// Input do valor inicial
+		   		var numInicial;
+		   		//Input do valor final
+			    var numFinal ; 
+			    // Qauntidade de numeros que poderão ser sortados de acordo com os valores de entrada
+			    var sorteaveis;  		
+		
+				// Define o evento de pressionar com o botão do mouse
+				document.getElementById("btnSortear").addEventListener('mousedown', function() {
+
+					// Define um intervalo que a função será chamanda em 0.5 segundos
+				    intervalId = setInterval(hold, 50);
+				    // Atribui o valor do input a variavel numInicial
+				    numInicial = parseInt(document.getElementById("num_inicial").value);
+				    // Atribui o valor do input a variavel numFinal
+			        numFinal = parseInt(document.getElementById("num_final").value);
+			        //atribui a variavel sortaeveis a quantidade de numeros que poderão ser sorteados
+			        sorteaveis = numFinal - (numInicial - 1);			    
+
+				});
+
+				// Define o evento de soltar o botão do mouse 
+				document.getElementById("btnSortear").addEventListener('mouseup', release);
+
+				// Função que será chamada com delay de 0.5 segundos ao pressionar o mouse
+				function hold() {
+
+					if (sorteaveis == sorteados.length) {
+		        		document.getElementById("sorteado").innerHTML = "<span class='esgotado'>Todos os números já foram sorteados</span>";
+		        		clearInterval(intervalId); // Limpa o intervalo registrado anteriormente
+					    intervalId = 0;
+					}else{
+			     	    //pegar valor aleatório entres o range de numeros informados
+					    num_sorteado =  sorteiaNum();
+					    //Seta valOR A SPAN do sroteio
+					    document.getElementById("sorteado").innerHTML = num_sorteado;
+					    //Input escondido que armazena o valor sorteado
+					    document.getElementById("sorteadoHidden").value = num_sorteado;
+					}
+
+				}
+
+				// Função que será chamada quando soltar o botão
+				function release() {		
+
+				    if(intervalId != 0) {
+				        clearInterval(intervalId); // Limpa o intervalo registrado anteriormente
+				        intervalId = 0;
+
+				        //Loop while que garante que não haverá repetição de numeros sorteados
+				        do{
+				        	var achoNoArray = false ;
+					        if (sorteados.indexOf(document.getElementById("sorteadoHidden").value) === -1) {			        	
+					        	sorteados.push(document.getElementById("sorteadoHidden").value);
+					        	var ul = document.getElementById("sorteados");
+								var li = document.createElement("li");
+
+								li.appendChild(document.createTextNode(num_sorteado));
+								ul.insertBefore(li, ul.childNodes[0]);
+					        	achoNoArray = true;
+
+					        }else{
+					        	hold();				        	
+					        }
+					    }while (achoNoArray == false && sorteaveis != sorteados.length)   					
+				    }	    	
+				}
+
+				//Gera numero aleatório dentro do range informado nos inputs
+				function sorteiaNum(){
+			  	  return Math.floor(Math.random()*(numFinal - numInicial + 1))+ parseInt(numInicial);
+				}
+			});	
+
+	    </script>
+
+	</head>
+	<body>
+
+		<div class="corpo-sorteado">
+
+			<div class="logo1">
+				<img style="width: 294px;" src="img1.jpg">
+			</div>
+
+			<div class="logo2">
+				<img style="width: 294px;" src="img1.jpg">
+			</div>
+
+			<div class="pai" class="sorteado">
+				<div style="width: 100%;">
+					<span class="filho" id="sorteado">-</span>
+				</div>	    
+			  	<div style="">
+				    <ul style="overflow: auto;height: 483px;list-style: none; margin: 6px 0 0 -35px;text-align: center;"id="sorteados">
+					</ul>
+				</div>
+			</div>
+
+			<div class="input">
+				<input id="sorteadoHidden" type="hidden" value="teste"></input>
+				<input placeholder="Inicio" id="num_inicial"></input>
+				<input placeholder="Final" id="num_final"></input>
+
+				<div>
+					<button id="btnSortear">
+						CLIQUE, SEGURO E SOLTE
+					</button>
+				</div>
+			</div>	
+		</div>	
+	</body>
+</html>
