@@ -78,90 +78,83 @@
 
 	    <script>
 
-	    	// Adiciona a funçao ao documento após o carregamento da HTML
-	    	document.addEventListener("DOMContentLoaded", function(event) {
 
-	    		// Intervalo de repetição da fnção hold
-		   		var intervalId = 0;
-		   		// Array onde serão armazenados os numeros sortados
-		   		var sorteados = [];
-		   		// Armazena o numero sorteado
-		   		var num_sorteado;
-		   		// Input do valor inicial
-		   		var numInicial;
-		   		//Input do valor final
-			    var numFinal ; 
-			    // Qauntidade de numeros que poderão ser sortados de acordo com os valores de entrada
-			    var sorteaveis;  		
-		
-				// Define o evento de pressionar com o botão do mouse
-				document.getElementById("btnSortear").addEventListener('mousedown', function() {
+	    document.addEventListener("DOMContentLoaded", function(event) {
+			
+	    	let numInicial
+	    	let numFinal
+			let qtdSorteaveis 
+	    	let sorteado
+	    	let sorteados = []
+			let intervalId = 0;
 
-					// Define um intervalo que a função será chamanda em 0.5 segundos
-				    intervalId = setInterval(hold, 50);
-				    // Atribui o valor do input a variavel numInicial
-				    numInicial = parseInt(document.getElementById("num_inicial").value);
-				    // Atribui o valor do input a variavel numFinal
-			        numFinal = parseInt(document.getElementById("num_final").value);
-			        //atribui a variavel sortaeveis a quantidade de numeros que poderão ser sorteados
-			        sorteaveis = numFinal - (numInicial - 1);			    
+	    	function setaInicialFinal(){
+	    		numInicial = parseInt(document.getElementById('num_inicial').value)
+				numFinal   = parseInt(document.getElementById('num_final').value)
+				qtdSorteaveis  = numFinal - (numInicial - 1)
+	    	}
 
-				});
+	    	function sorteiaNumAleatorio(){
+	    		sorteado = Math.floor(Math.random()*(numFinal - numInicial + 1))+ parseInt(numInicial)
+				preencheDivSorteado()
+			}
 
-				// Define o evento de soltar o botão do mouse 
-				document.getElementById("btnSortear").addEventListener('mouseup', release);
+	    	function confereSeJaFoiSorteado(){
+	    		if (sorteados.indexOf(sorteado) == -1) {
+	    			return "não"
+	    		}
+	    	}
 
-				// Função que será chamada com delay de 0.5 segundos ao pressionar o mouse
-				function hold() {
+	    	function armazenaSorteados(){
+	    		sorteados.push(sorteado)
+	    	}
 
-					if (sorteaveis == sorteados.length) {
-		        		document.getElementById("sorteado").innerHTML = "<span class='esgotado'>Todos os números já foram sorteados</span>";
-		        		clearInterval(intervalId); // Limpa o intervalo registrado anteriormente
+			function preencheDivSorteado(){
+				if(sorteados.length <= qtdSorteaveis ){
+					document.getElementById("sorteado").innerHTML = sorteado
+				}
+			}
+
+	       	function btnUp(){
+		   		
+				let jaSorteado				
+				do{
+					jaSorteado = false
+
+					if (confereSeJaFoiSorteado()  == "não") {
+
+						clearInterval(intervalId);
+					    intervalId = 0;
+						armazenaSorteados(sorteado)	
+						let ul = document.getElementById("sorteados")
+						let li = document.createElement("li")
+
+						li.appendChild(document.createTextNode(sorteado))
+						ul.insertBefore(li, ul.childNodes[0])
+						preencheDivSorteado()
+					    jaSorteado = true
+					}else if(sorteados.length >= qtdSorteaveis ){
+						document.getElementById("sorteado").innerHTML = "<span class='esgotado'>Todos os números já foram sorteados</span>";
+						clearInterval(intervalId);
 					    intervalId = 0;
 					}else{
-			     	    //pegar valor aleatório entres o range de numeros informados
-					    num_sorteado =  sorteiaNum();
-					    //Seta valOR A SPAN do sroteio
-					    document.getElementById("sorteado").innerHTML = num_sorteado;
-					    //Input escondido que armazena o valor sorteado
-					    document.getElementById("sorteadoHidden").value = num_sorteado;
+						sorteiaNumAleatorio()
+						clearInterval(intervalId);
+					    intervalId = 0;
 					}
+				}while (jaSorteado == false && qtdSorteaveis  != sorteados.length) 
+				console.log(sorteados)					
+		   	}
+			
+			document.getElementById("btnSortear").addEventListener('mousedown', function() {
+				setaInicialFinal()
+				intervalId = setInterval(sorteiaNumAleatorio, 50);
+			})
 
-				}
+			document.getElementById("btnSortear").addEventListener('mouseup', btnUp)
 
-				// Função que será chamada quando soltar o botão
-				function release() {		
-
-				    if(intervalId != 0) {
-				        clearInterval(intervalId); // Limpa o intervalo registrado anteriormente
-				        intervalId = 0;
-
-				        //Loop while que garante que não haverá repetição de numeros sorteados
-				        do{
-				        	var achoNoArray = false ;
-					        if (sorteados.indexOf(document.getElementById("sorteadoHidden").value) === -1) {			        	
-					        	sorteados.push(document.getElementById("sorteadoHidden").value);
-					        	var ul = document.getElementById("sorteados");
-								var li = document.createElement("li");
-
-								li.appendChild(document.createTextNode(num_sorteado));
-								ul.insertBefore(li, ul.childNodes[0]);
-					        	achoNoArray = true;
-
-					        }else{
-					        	hold();				        	
-					        }
-					    }while (achoNoArray == false && sorteaveis != sorteados.length)   					
-				    }	    	
-				}
-
-				//Gera numero aleatório dentro do range informado nos inputs
-				function sorteiaNum(){
-			  	  return Math.floor(Math.random()*(numFinal - numInicial + 1))+ parseInt(numInicial);
-				}
-			});	
-
-	    </script>
+		})
+	</script>
 
 	</head>
 	<body>
@@ -193,7 +186,7 @@
 
 				<div>
 					<button id="btnSortear">
-						CLIQUE, SEGURO E SOLTE
+						CLIQUE, SEGURE E SOLTE
 					</button>
 				</div>
 			</div>	
